@@ -22,7 +22,7 @@ var whiteSpace = regexp.MustCompile(`\w+`)
 func main() {
 	var err error
 
-	flag.StringVar(&outFilename, "f", "", "the name of the file to write the output to")
+	flag.StringVar(&outFilename, "o", "", "the name of the file to write the output to")
 	flag.StringVar(&packageName, "p", "main", "the name of the package of the output")
 	flag.Parse()
 
