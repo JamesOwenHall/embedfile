@@ -26,7 +26,7 @@ func NewGoWriter(packageName string, output io.Writer) GoWriter {
 
 // Open prepares the output for writing.
 func (g *GoWriter) Open() error {
-	_, err := fmt.Fprintln(g.output, "package ", g.packageName)
+	_, err := fmt.Fprintln(g.output, "package", g.packageName)
 	return err
 }
 
