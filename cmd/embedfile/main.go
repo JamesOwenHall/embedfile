@@ -93,12 +93,49 @@ func sanitizeVarName(filename string) string {
 		filename = filename[:periodIndex]
 	}
 
+	// Limit the name to alphanumeric characters
 	var result []rune
-	for _, c := range filename {
-		if ('A' <= c && c <= 'Z') || ('a' <= c && c <= 'z') || ('0' <= c && c <= '9') || c == '_' {
-			result = append(result, c)
+	for _, r := range filename {
+		if alphabetic(r) || numeric(r) || r == '_' {
+			result = append(result, r)
 		}
 	}
 
+	// Names can't start with a number
+	if numeric(result[0]) {
+		result = prependRune('_', result)
+	}
+
 	return string(result)
+}
+
+// alphabetic returns true if r is a letter in the english alphabet.
+func alphabetic(r rune) bool {
+	if ('A' <= r && r <= 'Z') || ('a' <= r && r <= 'z') {
+		return true
+	}
+
+	return false
+}
+
+// numeric returns true if r is a digit.
+func numeric(r rune) bool {
+	if '0' <= r && r <= '9' {
+		return true
+	}
+
+	return false
+}
+
+// prependRune returns a slice starting with r and followed by
+// the elements of s.
+func prependRune(r rune, s []rune) []rune {
+	result := make([]rune, 0, len(s)+1)
+
+	result = append(result, r)
+	for _, run := range s {
+		result = append(result, run)
+	}
+
+	return result
 }
