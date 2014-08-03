@@ -15,6 +15,7 @@ import (
 var (
 	outFilename string
 	packageName string
+	variable    bool
 )
 
 var whiteSpace = regexp.MustCompile(`\w+`)
@@ -24,6 +25,7 @@ func main() {
 
 	flag.StringVar(&outFilename, "o", "", "the name of the file to write the output to")
 	flag.StringVar(&packageName, "p", "main", "the name of the package of the output")
+	flag.BoolVar(&variable, "v", false, "set the file to var (default is const)")
 	flag.Parse()
 
 	// Check for input files
@@ -65,7 +67,7 @@ func main() {
 		}
 		defer file.Close()
 
-		err = goWriter.WriteFile(varName, file)
+		err = goWriter.WriteFile(varName, file, variable)
 		if err != nil {
 			fmt.Println(err)
 			return

@@ -31,12 +31,19 @@ func (g *GoWriter) Open() error {
 }
 
 // Writes the contents of the file to the output.
-func (g *GoWriter) WriteFile(varName string, file *os.File) error {
+func (g *GoWriter) WriteFile(varName string, file *os.File, variable bool) error {
 	reader := bufio.NewReader(file)
 	scanner := bufio.NewScanner(reader)
 	scanner.Split(scanAllRunes)
 
-	_, err := fmt.Fprint(g.output, "\nconst ", varName, " = \"")
+	var declare string
+	if variable {
+		declare = "var"
+	} else {
+		declare = "const"
+	}
+
+	_, err := fmt.Fprint(g.output, "\n", declare, " ", varName, " = \"")
 	if err != nil {
 		return err
 	}
