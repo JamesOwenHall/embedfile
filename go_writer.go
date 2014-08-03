@@ -36,7 +36,7 @@ func (g *GoWriter) WriteFile(varName string, file *os.File) error {
 	scanner := bufio.NewScanner(reader)
 	scanner.Split(scanAllRunes)
 
-	_, err := fmt.Fprint(g.output, "\nvar ", varName, " = \"")
+	_, err := fmt.Fprint(g.output, "\nconst ", varName, " = \"")
 	if err != nil {
 		return err
 	}
