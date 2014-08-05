@@ -31,11 +31,7 @@ func (g *GoWriter) Open() error {
 }
 
 // Writes the contents of the file to the output.
-func (g *GoWriter) WriteFile(varName string, file *os.File, variable bool) error {
-	reader := bufio.NewReader(file)
-	scanner := bufio.NewScanner(reader)
-	scanner.Split(scanAllRunes)
-
+func (g *GoWriter) WriteFile(varName string, file *os.File, variable, bytemode bool) error {
 	var declare string
 	if variable {
 		declare = "var"
@@ -43,7 +39,60 @@ func (g *GoWriter) WriteFile(varName string, file *os.File, variable bool) error
 		declare = "const"
 	}
 
-	_, err := fmt.Fprint(g.output, "\n", declare, " ", varName, " = \"")
+	_, err := fmt.Fprint(g.output, "\n", declare, " ", varName, " = ")
+	if err != nil {
+		return err
+	}
+
+	if bytemode {
+		g.writeByteSlice(file)
+	} else {
+		g.writeString(file)
+	}
+
+	_, err = fmt.Fprint(g.output, "\n")
+	return err
+}
+
+// writeByteSlice outputs the file contents as a byte slice
+func (g *GoWriter) writeByteSlice(file *os.File) error {
+	var err error
+
+	reader := bufio.NewReader(file)
+	scanner := bufio.NewScanner(reader)
+	scanner.Split(bufio.ScanBytes)
+
+	_, err = fmt.Fprint(g.output, "[]byte{")
+	if err != nil {
+		return err
+	}
+
+	// First element of the slice doesn't have a comma
+	if scanner.Scan() {
+		_, err = fmt.Fprint(g.output, "0x", toHex(scanner.Bytes()[0]))
+	}
+
+	// The rest of the elements do
+	for scanner.Scan() {
+		_, err = fmt.Fprint(g.output, ", 0x", toHex(scanner.Bytes()[0]))
+		if err != nil {
+			return err
+		}
+	}
+
+	_, err = fmt.Fprint(g.output, "}")
+	return err
+}
+
+// writeString outputs the file contents as a string
+func (g *GoWriter) writeString(file *os.File) error {
+	var err error
+
+	reader := bufio.NewReader(file)
+	scanner := bufio.NewScanner(reader)
+	scanner.Split(scanAllRunes)
+
+	_, err = fmt.Fprint(g.output, `"`)
 	if err != nil {
 		return err
 	}
@@ -66,7 +115,7 @@ func (g *GoWriter) WriteFile(varName string, file *os.File, variable bool) error
 		}
 	}
 
-	_, err = fmt.Fprint(g.output, "\"\n")
+	_, err = fmt.Fprint(g.output, `"`)
 	return err
 }
 
