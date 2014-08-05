@@ -13,4 +13,4 @@ Syntax | Description
 __-b__ | Creates data of type []byte instead of string
 __-o__ *filename* | Outputs the generated code to a file
 __-p__ *package* | Sets the package name of the output.  Defaults to "main"
-__-v__ | (*Not yet implemented*) Sets the output to be `var` instead of the default `const`
+__-v__ | Sets the output to be `var` instead of the default `const`
